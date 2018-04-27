@@ -16,10 +16,10 @@ struct Production
  * @param P is an array that has elements of type "struct Production"
  * @param numberOfProductions is an int that represents the number of the elements of array P
  */
-void createProductions(vector<Production> &P, int &numberOfProductions)
+void createProductions(vector<Production> &P, unsigned &numberOfProductions)
 {
     ifstream fin("..\\Regular Grammar.txt");
-    int i;
+    unsigned i;
     char unusedArrowCharacter;
 
     fin >> numberOfProductions;
@@ -47,17 +47,17 @@ void createProductions(vector<Production> &P, int &numberOfProductions)
  * @param operationName is a character that represents the name of the operation that will be verified
  * @return 1 if at least one operation with the name "operationName" can produce lambda, else return 0
  */
-bool operationCanProduceLambda(vector<Production> P, int numberOfProductions, char operationName)
+bool operationCanProduceLambda(vector<Production> P, unsigned numberOfProductions, char operationName)
 {
-    int i;
+    unsigned i;
 
     for (i = 0; i < numberOfProductions; i++)
         if (P[i].name == operationName)
         {
             if (P[i].operations == "0")
-                return 1; // this return will happen only when operationName produces lambda
+                return true; // this return will happen only when operationName produces lambda
         }
-    return 0; // this return will happen only when operationName doesn't produce lambda
+    return false; // this return will happen only when operationName doesn't produce lambda
 }
 
 /**
@@ -68,15 +68,15 @@ bool operationCanProduceLambda(vector<Production> P, int numberOfProductions, ch
  * @param productionID is an int that represents the index of the production from the array that will be verified
  * @return 1 if the production with index "productionID" produces only terminals, else return 0
  */
-bool thisProductionProducesOnlyTerminals(vector<Production> P, int numberOfProductions, int productionID)
+bool thisProductionProducesOnlyTerminals(vector<Production> P, unsigned productionID)
 {
-    int j;
+    unsigned j;
 
     for (j = 0; j < P[productionID].operations.size(); j++)
         if (('A' <= P[productionID].operations[j]) && (P[productionID].operations[j] <= 'Z'))
-            return 0; // this return will happen only when the production P[productionID] produces at least one non-terminal (characters between 'A' and 'Z')
+            return false; // this return will happen only when the production P[productionID] produces at least one non-terminal (characters between 'A' and 'Z')
 
-    return 1; // this return will happen only when P[productionID] produces only terminals (characters between 'a' and 'z')
+    return true; // this return will happen only when P[productionID] produces only terminals (characters between 'a' and 'z')
 }
 
 /**
@@ -87,11 +87,11 @@ bool thisProductionProducesOnlyTerminals(vector<Production> P, int numberOfProdu
  * @param productionID is an int that represents the index of the production from the array that will be verified
  * @return 1 if the production with index "productionID" produces lambda, else return 0
  */
-bool thisProductionProducesLambda(vector<Production> P, int numberOfProductions, int productionID)
+bool thisProductionProducesLambda(vector<Production> P, unsigned productionID)
 {
     if (P[productionID].operations == "0")
-        return 1;
-    return 0;
+        return true;
+    return false;
 }
 
 /**
@@ -106,10 +106,11 @@ bool thisProductionProducesLambda(vector<Production> P, int numberOfProductions,
  * @param maxLength is an int that represents the number of characters of the generated words that must be printed
  */
 void
-executeThisOperation(vector<Production> P, int numberOfProductions, char operationName, string word, int wordLength,
-                     int maxLength)
+executeThisOperation(vector<Production> P, unsigned numberOfProductions, char operationName, string word,
+                     unsigned wordLength,
+                     unsigned maxLength)
 {
-    int i, j;
+    unsigned i, j;
     string wordGeneratedOnlyByThisProduction;
 
     if ((wordLength == maxLength) && operationCanProduceLambda(P, numberOfProductions, operationName))
@@ -120,7 +121,7 @@ executeThisOperation(vector<Production> P, int numberOfProductions, char operati
 
     if (wordLength < maxLength)
         for (i = 0; i < numberOfProductions; i++)
-            if ((P[i].name == operationName) && (!thisProductionProducesLambda(P, numberOfProductions, i)))
+            if ((P[i].name == operationName) && (!thisProductionProducesLambda(P, i)))
             {
                 wordGeneratedOnlyByThisProduction = "";
 
@@ -133,8 +134,8 @@ executeThisOperation(vector<Production> P, int numberOfProductions, char operati
                                              (word + wordGeneratedOnlyByThisProduction).size(), maxLength);
 
                 // this if is for productions that look like this A -> a  (productions that produce only terminals)
-                if (thisProductionProducesOnlyTerminals(P, numberOfProductions, i) &&
-                        (word + wordGeneratedOnlyByThisProduction).size() == maxLength)
+                if (thisProductionProducesOnlyTerminals(P, i) &&
+                    (word + wordGeneratedOnlyByThisProduction).size() == maxLength)
                     cout << word + wordGeneratedOnlyByThisProduction << ' ';
             }
 }
@@ -142,8 +143,8 @@ executeThisOperation(vector<Production> P, int numberOfProductions, char operati
 int main()
 {
     vector<Production> P;
-    int numberOfProductions = 0;
-    int maxLength;
+    unsigned numberOfProductions = 0;
+    unsigned maxLength;
 
     createProductions(P, numberOfProductions);
 
