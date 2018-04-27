@@ -153,6 +153,6 @@ int main()
 
     executeThisOperation(P, numberOfProductions, 'S', "", 0, maxLength);
 
-    cout << '\n' << '\n';
+    cout << '\n';
     return 0;
 }
